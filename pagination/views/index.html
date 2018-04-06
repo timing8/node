@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>分页效果</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .container{
+            width: 1120px;
+            margin: 100px auto ;
+            box-shadow: 0 0 5px #ddd;
+            padding-top: 50px;
+            position: relative;
+            padding-bottom: 30px;
+        }
+        .container:after{
+            content: "";
+            display: block;
+            clear: both;
+        }
+        .container ul li{
+            list-style-type:none;
+            width: 220px;
+            padding: 2px;
+            float: left;
+        }
+        .container ul li img{
+            width: 100%;
+            height: 321px;
+            box-shadow: 0 0 5px #888;
+        }
+        .container ul li h3{
+            color: cornflowerblue;
+            text-align: center;
+        }
+        .btn{
+            width: 100%;
+            height: 20px;
+            background: rgba(0,0,0,.3);
+            text-align: center;
+            position: absolute;
+            bottom: 0;
+        }
+
+        .btn span{
+            display: inline-block;
+            padding: 0 10px;
+            color:#fff;
+
+        }
+    </style>
+</head>
+<body>
+    
+
+    <div class="container">
+        <!--分页显示区-->
+        <ul>
+           
+        </ul>
+        <!--操作区域-->
+        <div class="btn">
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+        </div>
+    </div>
+
+    <script
+    src="http://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+<script>
+$(function(){
+    // alert("hello 熟悉的JavaScript又回来了");
+    // $.ajax("http://localhost:3000/pagination")
+    
+    // setTimeout(() => {
+    //     alert("hello world1");
+    //     fn();
+    // }, 1000);
+    // function fn(){
+    //     alert("hello world2");
+    // }
+    
+    // function fn1(){
+    //     alert("hello world1");
+    // };
+    // var deff = $.Deferred();
+    // console.log(deff);
+    
+    // $.ajax()
+    // .then()
+
+    // function fn2(){
+    //     alert("hello world2");
+    // }
+
+    // var promise = new Promise(function(resolve,rejected){
+    //     // console.log(1);
+    //     setTimeout(function (){
+    //         fn1();
+    //         // resolve();
+    //         rejected("hello world");
+    //     }, 1000);
+    // })
+    // promise.then(function(){
+    //     return new Promise(function(succ,failed){
+    //         setTimeout(() => {
+    //             fn2();
+    //         }, 1000);
+    //     })
+    // },function(e){
+    //     console.log(e);
+    // })
+    // .then()
+    // console.log(promise);
+    // when();
+    // let options = {
+    //     dataType:"json",
+    //     data:{page:1}
+    // }
+    // $.ajax("http://localhost:3000/pagination",options)
+    // .then(render_page)
+
+    // function render_page(res){
+    //     if(res.length == 0) return 0;
+    //     let html = "";
+    //     res.data.forEach(function(item,index){
+    //         let temp = `<li>
+    //                     <img src="${item.images.small}">
+    //                     <h3>${item.title}</h3>
+    //                 </li>`
+
+    //         html += temp;
+    //     })
+    //     $('.container ul').html(html);
+    // }
+
+    // //换页面的逻辑：
+
+    // $(".btn span").click(function(){
+    //     console.log($(this).index());
+    // });
+
+    //1. 加载数据 => options;
+    //2. 渲染页面;
+    //3. 事件绑定;
+        
+    function Pagination(url,event_dom){
+        if(!url) throw  new Error().message = "请传入url参数";
+        this.options = {
+            url:url,
+            data:null,
+            dataType:"json"
+        }
+        this.init();
+        if(event_dom){
+            this.add_event(event_dom);
+        }
+    } 
+
+    Pagination.prototype = {
+        constructor: Pagination,
+        init:function(){
+            this.load_json();
+        },
+        add_event:function(dom){
+            var _this = this;
+            dom.click(function(){
+                _this.options = $.extend(_this.options,{data:{page:$(this).index()}})
+                _this.load_json.call(_this);
+            })
+        },
+        load_json:function(){
+            $.ajax(this.options)
+            .done($.proxy(this.render_page,this))
+            .fail(this.error)
+        },
+        render_page:function(res){
+            if (res.length == 0) return 0;
+            let html = "";
+            res.data.forEach(function(item,index){
+                let temp = `<li>
+                            <img src="${item.images.small}">
+                            <h3>${item.title}</h3>
+                        </li>`
+
+                html += temp;
+            })
+            $('.container ul').html(html);
+        },
+        error:function(err){
+            console.log(err.state);
+        }
+    }
+    new Pagination("http://localhost:3000/pagination",$(".btn span"));
+})
+</script>
+</body>
+</html>
